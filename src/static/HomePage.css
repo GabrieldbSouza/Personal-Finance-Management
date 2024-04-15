@@ -9,12 +9,12 @@
 
 .HomePage {
   background: #FCFDFD;
-  /*#e0f6e6   E3F5E0 #f6f8f7 F6F8F7 #FCFDFD*/
 }
 .Page {
   display: flex;
-  height: 92vh;
+  height: 84vh;
   padding: 10px 40px;
+  border-bottom: black solid 1px;
 }
 
 .Introduction {
@@ -62,4 +62,16 @@
 .Figure img {
   width: auto;
   height: 100%;
+}
+
+.Github {
+  height: 8vh;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+}
+
+.Github img {
+  width: auto;
+  height: 30px;
 }

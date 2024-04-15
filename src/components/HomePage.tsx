@@ -20,6 +20,11 @@ function HomePgae(){
           <img src="src/assets/001.svg" alt="" />
         </div>
       </div>
+      <div className="Github">
+        <a href="https://github.com/GabrieldbSouza/Personal-Finance-Management.git" target="_blank" rel="noopener noreferrer">
+          <img src="src/assets/github-mark.svg" alt="" />
+        </a>
+      </div>
     </div>
   )
 }
