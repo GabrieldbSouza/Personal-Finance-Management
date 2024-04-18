@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import '../static/NavigationBar.css' 
+import styles from '../static/NavigationBar.module.css' 
 
 function NavigationBar() {
 
@@ -15,13 +15,13 @@ function NavigationBar() {
     navigation('/')
   }
   return (
-    <div className='NavigationBar'>
-      <div className="Logo">
-        <button id='Logo' onClick={goToHomePage}>Personal Finance Management</button>
+    <div className={styles.NavigationBar}>
+      <div className={styles.Logo}>
+        <button id='Logo' className={styles.Logo} onClick={goToHomePage}>Personal Finance Management</button>
       </div>
-      <div className='BtnAccount'>
-        <button id='Connect' onClick={goToRegisterPage}>Connect</button>
-        <button id='Account' onClick={goToLoginPage}>My Account</button> 
+      <div className={styles.BtnAccount}>
+        <button id='Connect' className={styles.Connect} onClick={goToRegisterPage}>Connect</button>
+        <button id='Account' className={styles.Account} onClick={goToLoginPage}>My Account</button> 
       </div>
     </div>
   )

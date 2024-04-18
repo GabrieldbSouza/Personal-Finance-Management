@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import NavigationBar from './../../components/NavigationBar';
-import './RegisterPage.css'
+import styles from './RegisterPage.module.css'
 
 function RegisterPage() {
+
   const [registerForm, setRegisterForm] = useState({
     name: "",
     email: "",
@@ -13,7 +14,7 @@ function RegisterPage() {
 
   const navigation = useNavigate();
 
-  function handleChange(event) {
+  function handleChange(event: any) {
     const { name, value } = event.target;
     setRegisterForm(prevState => ({
       ...prevState,
@@ -21,7 +22,7 @@ function RegisterPage() {
     }));
   }
 
-  function btnRegister(event) {
+  function btnRegister(event: any) {
     event.preventDefault(); // Impede o envio do formulário padrão
     axios({
       method: "POST",
@@ -32,14 +33,21 @@ function RegisterPage() {
         password: registerForm.password
       }
     }).then((response) => {
-      // Se o registro for bem-sucedido, redirecione para a página do usuário
-      localStorage.setItem('email', registerForm.email);
-      navigation('/userpage');
+      const { id, name, email, accessToken } = response.data;
+      localStorage.setItem('userId', id);
+      localStorage.setItem('userName', name);
+      localStorage.setItem('userEmail', email);
+      console.log("AccessToken:", accessToken);
+      localStorage.setItem('accessToken', accessToken);
+      if (accessToken && typeof accessToken === 'string' && accessToken.trim() !== '') {
+        navigation('/userpage');
+    } else{
+        navigation('/register');
+    }
     }).catch(error => {
       alert("Erro no registro: " + error.response.data.message);
     });
 
-    // Limpa os campos do formulário após o registro
     setRegisterForm({
       name: "",
       email: "",
@@ -50,12 +58,12 @@ function RegisterPage() {
   return (
     <div className="RegisterPage">
       <NavigationBar />
-      <div className="Page">
+      <div className={styles.Page}>
         <form onSubmit={btnRegister}>
           <input type="text" value={registerForm.name} onChange={handleChange} name="name" placeholder='Nome'/>
           <input type="email" value={registerForm.email} onChange={handleChange} name="email" placeholder='Email'/>
           <input type="password" value={registerForm.password} onChange={handleChange} name="password" placeholder='Password'/>
-          <input id='Submit' type="submit" value="Cadastrar" />
+          <input id='Submit' className={styles.Submit} type="submit" value="Cadastrar" />
         </form>
       </div>
     </div>

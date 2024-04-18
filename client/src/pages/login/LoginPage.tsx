@@ -3,7 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import NavigationBar from './../../components/NavigationBar';
 
-function LoginPage(props) {
+function LoginPage(props: any) {
+
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: ""
@@ -11,7 +12,7 @@ function LoginPage(props) {
 
   const navigation = useNavigate();
 
-  function handleChange(event) {
+  function handleChange(event: any) {
     const { name, value } = event.target;
     setLoginForm(prevState => ({
       ...prevState,
@@ -19,7 +20,7 @@ function LoginPage(props) {
     }));
   }
 
-  function btnLogin(event: React.FormEvent<HTMLFormElement>) {
+  function btnLogin(event: any) {
     event.preventDefault(); // Impede o envio do formulário padrão
     axios({
       method: "POST",
@@ -29,14 +30,17 @@ function LoginPage(props) {
         password: loginForm.password
       }
     }).then((response) => {
-      props.setToken(response.data.accessToken); // Corrigido para accessToken
-      alert("Login bem sucedido");
-      localStorage.setItem('email', loginForm.email);
-      navigation('/userpage');
+      const {accessToken } = response.data;
+      console.log("AccessToken:", accessToken);
+      
+      if (accessToken && typeof accessToken === 'string' && accessToken.trim() !== '') {
+        navigation('/userpage');
+    } else{
+        navigation('/login');
+    }
     }).catch(error => {
       alert("Erro no login: " + error.response.data.message);
     });
-
     setLoginForm({
       email: "",
       password: ""

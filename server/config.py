@@ -4,11 +4,16 @@ from dotenv import load_dotenv
 from routes.homePage import homePageRoute
 from database.database import db
 from database.models.user import User
+from flask_jwt_extended import JWTManager
+
 
 def config_all(app):
   config_app(app)
   config_route(app)
   config_db(app)
+  jwt = JWTManager(app)
+  app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
+
 
 def config_app(app):
   app.config['OAUTH2_PROVIDERS'] = { 
