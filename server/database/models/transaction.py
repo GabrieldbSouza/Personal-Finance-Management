@@ -7,9 +7,15 @@ class Transaction(db.Model):
     transUserId = db.Column(db.Integer, db.ForeignKey('user.userId'), nullable = False)
     transDate = db.Column(db.Date, nullable = False)
     transAmount = db.Column(db.Interger, nullable = False)
-    transType = db.Column(db.Interger, db.foreignKey('category.catId'), nullable = False)
+    transType = db.Column(db.Interger, db.foreignKey('type.typeId'), nullable = False)
+    transCategory = db.Column(db.Interger, db.foreignKey('category.catId'), nullable = False)
 
 class category(db.Model):
     __tablename__ = 'categories'
     catId = db.Column(db.Integer, primary_key = True)
     catName = db.Column(db.String, nullable = False)
+
+class type(db.Model):
+    __tablename__ = 'types of transactions'
+    typeId = db.Column(db.Integer, primary_key = True)
+    typeType = db.Column(db.String, nullable = False)
