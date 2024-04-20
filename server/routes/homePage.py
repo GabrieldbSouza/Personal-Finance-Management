@@ -3,6 +3,7 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token
 from database.models.user import User
 from database.database import db
+from datetime import timedelta
 
 homePageRoute = Blueprint('home', __name__)
 bcrypt = Bcrypt()
@@ -13,45 +14,41 @@ def home():
 
 @homePageRoute.route('/login', methods = ['POST', 'OPTIONS'])
 def login():
-  if request.method == 'OPTIONS':
-    return '', 200 
   email = request.json.get('email')
   password = request.json.get('password')
-  print(email,password)
+
   user = User.query.filter_by(userEmail = email).first()
 
   if user is None:
-    print("sem email")
-    return "<erro>"
+    return jsonify({'error': 'Email invalido'}), 404
   
   if not bcrypt.check_password_hash(user.userPassword, password):
-    print("bdbdbd")
-    return "<erro>"
-  accessToken = create_access_token(identity = email)
+    return jsonify({'error': 'Senha invalida'}), 401
+  
+  accessToken = create_access_token(identity = email, expires_delta = timedelta(hours=1))
+
   return jsonify({
+    "id": user.userId,
+    "name": user.userName,
     "email": email,
     "accessToken": accessToken
   }), 200
 
 @homePageRoute.route('/register', methods = ['POST', 'OPTIONS'])
 def register():
-  if request.method == 'OPTIONS':
-    return '', 200
   name = request.json.get('name')
   email = request.json.get('email')
   password = request.json.get('password')
 
-
   if User.query.filter_by(userEmail=email).first() is not None:
-    print("error")
-    return "console.log('error')"
+    return jsonify({'error': 'Usuario ja cadastrado.'}), 409
 
   newUser = User(userName = name, userEmail = email, userPassword = bcrypt.generate_password_hash(password))
 
   db.session.add(newUser)
   db.session.commit()
 
-  accessToken = create_access_token(identity = email)
+  accessToken = create_access_token(identity = email, expires_delta = timedelta(hours=1))
 
   return jsonify ({
     "id": newUser.userId,
