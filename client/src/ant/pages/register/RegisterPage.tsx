@@ -45,7 +45,17 @@ function RegisterPage() {
         navigation('/register');
     }
     }).catch(error => {
-      alert("Erro no registro: " + error.response.data.message);
+      if (error.response) {
+        // O servidor retornou uma resposta com um código de status diferente de 2xx
+        // Exiba a mensagem de erro para o usuário
+        alert("Erro no registro: " + error.response.data.error);
+      } else if (error.request) {
+        // O pedido foi feito, mas não recebeu resposta
+        console.log(error.request);
+      } else {
+        // Ocorreu um erro durante o processamento do pedido
+        console.log('Error', error.message);
+      }
     });
 
     setRegisterForm({

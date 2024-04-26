@@ -21,13 +21,16 @@ function LoginPage(props: any) {
   }
 
   function btnLogin(event: any) {
-    event.preventDefault(); // Impede o envio do formulário padrão
+    event.preventDefault(); 
     axios({
       method: "POST",
       url: "http://127.0.0.1:5001/login",
       data: {
         email: loginForm.email,
         password: loginForm.password
+      },
+      headers: {
+        "Content-Type": "application/json"
       }
     }).then((response) => {
       const {accessToken } = response.data;
