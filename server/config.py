@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from routes.homePage import homePageRoute
+from routes.home import homePageRoute
 from routes.user import userPageRoute
 
 from database.database import db
@@ -34,7 +34,7 @@ def config_app(app):
     }
 def config_route(app):
   app.register_blueprint(homePageRoute)  
-  app.register_blueprint(userPageRoute) 
+  app.register_blueprint(userPageRoute, url_prefix='/user') 
 
 def config_db(app):
   app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pfm.db'
