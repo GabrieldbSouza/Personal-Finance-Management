@@ -14,9 +14,9 @@ def config_all(app):
   config_app(app)
   config_route(app)
   config_db(app)
+  config_cors(app)
   jwt = JWTManager(app)
   app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
-
 
 def config_app(app):
   app.config['OAUTH2_PROVIDERS'] = { 
@@ -32,6 +32,7 @@ def config_app(app):
       'scopes': ['https://www.googleapis.com/auth/userinfo.email'],
     },
     }
+  
 def config_route(app):
   app.register_blueprint(homePageRoute)  
   app.register_blueprint(userPageRoute, url_prefix='/user') 
@@ -42,4 +43,10 @@ def config_db(app):
   db.init_app(app)
   with app.app_context():
     db.create_all()
-    
+
+def config_cors(app):
+  app.config['Access-Control-Allow-Origin'] = '*'
+  app.config['Access-Control-Allow-Headers'] = '*'
+  app.config['Access-Control-Allow-Methods'] = '*'
+  app.config['Access-Control-Allow-Origin'] = '*'
+  

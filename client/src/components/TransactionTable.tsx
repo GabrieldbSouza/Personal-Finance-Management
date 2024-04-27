@@ -19,12 +19,22 @@ const TransactionTable: React.FC = () => {
 
   const fetchTransactions = async () => {
     try {
-      const response = await axiosInstance.get('http://127.0.0.1:5000/transaction');
-      setTransactions(response.data || []);
+      const response = await axiosInstance.get('http://127.0.0.1:5000/user/transaction');
+      const formattedTransactions = response.data.map((transaction: any) => ({
+        id: transaction.transId,
+        name: transaction.transName,
+        date: transaction.transDate,
+        amount: transaction.transAmount,
+        type: transaction.transType,
+        category: transaction.transCategory
+      }));
+      setTransactions(formattedTransactions);
     } catch (error) {
       console.error('Erro ao buscar transações:', error);
     }
   };
+
+  console.log(transactions)
 
   return (
     <div style={{ maxHeight: '400px', overflowY: 'scroll' }}>

@@ -6,28 +6,34 @@ from database.models.transaction import Transaction, Type, Category
 from database.database import db
 from datetime import timedelta
 from datetime import datetime
-
+import json
 userPageRoute = Blueprint('user', __name__)
 bcrypt = Bcrypt()
 
 @userPageRoute.route('/transaction', methods = ['GET','OPTIONS'])
 @jwt_required()
 def transaction():
-  print("batata")
   if request.method == 'OPTIONS':
     response = jsonify(message='OPTIONS request received')
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Headers", "*")
-    response.headers.add("Access-Control-Allow-Methods", "*")
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.add('Access-Control-Allow-Methods', '*')
+
     return response, 200
   
   tkUserId = get_jwt_identity()
-  print('baat')
-  user = User.query.filter_by(id = tkUserId).first()
-  transactions = user.transactions
-  print(transactions)
-  print([transaction.to_dict() for transaction in transactions])
-  return jsonify(transaction.to_dict() for transaction in transactions)
+  user = User.query.filter_by(userId=tkUserId).first()
+
+  if not user:
+    return jsonify(message='User not found'), 404
+
+  transactions = Transaction.query.filter_by(transUserId=user.userId).all()
+
+  # Convertendo as transações para um formato adequado
+  transactions_data = [transaction.to_dict() for transaction in transactions]
+  print(json.dumps(transactions_data, indent=2))
+
+  return jsonify(transactions_data)
 
 @userPageRoute.route('/transaction/new', methods = ['POST'])
 @jwt_required()
@@ -55,7 +61,7 @@ def newTransaction():
 
   return '',200
 
-@userPageRoute.route('/type/new', methods = ['POST', 'OPTIONS'])
+@userPageRoute.route('/type/new', methods = ['POST', 'GET','OPTIONS'])
 def newType():
   if request.method == 'OPTIONS':
     response = jsonify(message='OPTIONS request received')
@@ -63,7 +69,10 @@ def newType():
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'POST')
     return response, 200
-
+  
+  if request.methods == 'GET':
+     return jsonify({"nome": "Funcionou"})
+  
   name = request.json.get('type')
   type = Type(typeName=name)  # Corrigido para typeType
   db.session.add(type)

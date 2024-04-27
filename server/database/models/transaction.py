@@ -10,6 +10,7 @@ class Type(db.Model):
     typeId = db.Column(db.Integer, primary_key = True)
     typeName = db.Column(db.String, nullable = False)
 
+
 class Transaction(db.Model):
     __tablename__ = 'transactions'
     transId = db.Column(db.Integer, primary_key = True)
@@ -20,4 +21,13 @@ class Transaction(db.Model):
     transType = db.Column(db.Integer, db.ForeignKey('type.typeId'), nullable = False)
     transCategory = db.Column(db.Integer, db.ForeignKey('category.catId'), nullable = False)
 
-
+    def to_dict(self):
+        return {
+            'transId': self.transId,
+            'transName': self.transName,
+            'transUserId': self.transUserId,
+            'transDate': self.transDate.isoformat(),  # Convertendo a data para uma string ISO
+            'transAmount': self.transAmount,
+            'transType': self.transType,
+            'transCategory': self.transCategory
+        }

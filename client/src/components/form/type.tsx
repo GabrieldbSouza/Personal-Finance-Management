@@ -19,7 +19,6 @@ const TypeForm = () => {
       alert('Erro ao enviar tipo. Por favor, tente novamente.');
     }
   };
-
   return (
     <div>
       <h2>Enviar Tipo</h2>

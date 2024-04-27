@@ -32,7 +32,7 @@ def login():
   if not bcrypt.check_password_hash(user.userPassword, password):
     return jsonify({'error': 'Senha invalida'}), 401
   
-  accessToken = create_access_token(identity=user.userId, expires_delta=timedelta(minutes=10))
+  accessToken = create_access_token(identity=user.userId, expires_delta=timedelta(hours=10))
   return jsonify({
     "id": user.userId,
     "name": user.userName,
