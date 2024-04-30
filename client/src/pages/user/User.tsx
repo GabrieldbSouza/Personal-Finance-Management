@@ -1,45 +1,34 @@
 import { useState } from 'react';
+import styles from "./user.module.css";
+import CategoryForm from "../../components/form/CategoryForm";
+import CicleForm from "../../components/form/CicleForm";
+import TypeForm from "../../components/form/TypeForm";
+import TransactionForm from "../../components/form/TransactionForm";
 import TransactionTable from '../../components/TransactionTable';
-import TransactionForm from '../../components/form/transactions';
-import TypeForm from '../../components/form/type';
-import CategoryForm from '../../components/form/category';
 
-const User = () => {
-  const [showTransactions, setShowTransactions] = useState(false);
-  const [showTransactionForm, setShowTransactionForm] = useState(false);
-  const [showTypeForm, setShowTypeForm] = useState(false);
-  const [showCategoryForm, setShowCategoryForm] = useState(false);
+export default function User() {
+  const [currentForm, setCurrentForm] = useState<string | null>(null);
 
-  const toggleShowTransactions = () => {
-    setShowTransactions(prevState => !prevState);
-  };
-
-  const toggleShowTransactionForm = () => {
-    setShowTransactionForm(prevState => !prevState);
-  };
-
-  const toggleShowTypeForm = () => {
-    setShowTypeForm(prevState => !prevState);
-  };
-
-  const toggleShowCategoryForm = () => {
-    setShowCategoryForm(prevState => !prevState);
+  const handleButtonClick = (formName: string) => {
+    setCurrentForm(formName);
   };
 
   return (
-    <div>
-      <h1>User Page</h1>
-      <button onClick={toggleShowTransactions}>Show Transactions</button>
-      <button onClick={toggleShowTransactionForm}>Add Transaction</button>
-      <button onClick={toggleShowTypeForm}>Add Type</button>
-      <button onClick={toggleShowCategoryForm}>Add Category</button>
-
-      {showTransactions && <TransactionTable />}
-      {showTransactionForm && <TransactionForm />}
-      {showTypeForm && <TypeForm />}
-      {showCategoryForm && <CategoryForm />}
+    <div className={styles.nav}>
+      <div className={styles.navform}>
+        <button className={styles.button} onClick={() => handleButtonClick('category')}>Add Category</button>
+        <button className={styles.button} onClick={() => handleButtonClick('cicle')}>Add Cicle</button>
+        <button className={styles.button} onClick={() => handleButtonClick('type')}>Add Type</button>
+        <button className={styles.button} onClick={() => handleButtonClick('transaction')}>Add Transaction</button>
+        <button className={styles.button} onClick={() => handleButtonClick('showTransaction')}>Show Transaction</button>
+      </div>
+      <div className="form">
+          {currentForm === 'category' && <CategoryForm />}
+          {currentForm === 'cicle' && <CicleForm />}
+          {currentForm === 'type' && <TypeForm />}
+          {currentForm === 'transaction' && <TransactionForm />}
+          {currentForm === 'showTransaction' && <TransactionTable />}
+        </div>
     </div>
   );
-};
-
-export default User;
+}

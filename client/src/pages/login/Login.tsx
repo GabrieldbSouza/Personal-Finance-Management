@@ -1,3 +1,38 @@
+import styles from "./login.module.css"
+import { FormEvent, useState } from "react";
+import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
+
+export default function Login(){
+
+  const [userEmail, setUserEmail] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const navigate = useNavigate();
+
+  const hadleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+        
+    const response = await api.post('/login', {
+      userEmail,
+      userPassword
+    });
+    localStorage.setItem('accessToken', response.data);
+    navigate('/user');
+  }
+
+  return (
+    <div className={styles.form}>
+      <h2>LOGIN</h2>
+      <form onSubmit={hadleSubmit}>
+        <input className={styles.input} type="email" value={userEmail} onChange={e => setUserEmail(e.target.value)} />
+        <input className={styles.input} type="password" value={userPassword} onChange={e => setUserPassword(e.target.value)} />
+        <button className={styles.button} onClick={hadleSubmit}>LOGIN</button>
+      </form>
+    </div>
+  )
+}
+
+/*
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom'
@@ -74,3 +109,5 @@ function Login() {
 }
 
 export default Login;
+
+*/

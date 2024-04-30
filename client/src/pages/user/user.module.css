@@ -1,0 +1,25 @@
+.nav {
+  height: 92vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.navform {
+  height: 8vh;
+  width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  border: 1px solid #afafaf;
+  border-radius: 15px;
+}
+
+.button {
+  padding: 2.5px 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+

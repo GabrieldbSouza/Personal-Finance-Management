@@ -1,67 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import axiosInstance from './axiosInstance'; // Importe o axiosInstance
+import { useEffect, useState } from "react";
+import api from "../services/api";
+import styles from "./table.module.css"
 
 interface Transaction {
-  id: number;
-  name: string;
-  date: string;
-  amount: number;
-  type: string;
-  category: string;
+  transId: number;
+  transName: string;
+  transDate: string;
+  transAmount: number;
+  transCategory: number;
+  transType: number;
+  transCicle: number;
 }
 
-const TransactionTable: React.FC = () => {
+export default function TransactionTable() {
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  const fetchTransactions = async () => {
-    try {
-      const response = await axiosInstance.get('http://127.0.0.1:5000/user/transaction');
-      const formattedTransactions = response.data.map((transaction: any) => ({
-        id: transaction.transId,
-        name: transaction.transName,
-        date: transaction.transDate,
-        amount: transaction.transAmount,
-        type: transaction.transType,
-        category: transaction.transCategory
-      }));
-      setTransactions(formattedTransactions);
-    } catch (error) {
-      console.error('Erro ao buscar transações:', error);
+    async function Transaction() {
+      const response = await api.get('user/transactions');
+        setTransactions(response.data);
     }
-  };
-
-  console.log(transactions)
+    Transaction();
+  }, [])
 
   return (
-    <div style={{ maxHeight: '400px', overflowY: 'scroll' }}>
+    <div className={styles.table}>
+      <h2>Transações</h2>
       <table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Type</th>
-            <th>Category</th>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Data</th>
+            <th>Valor</th>
+            <th>Categoria</th>
+            <th>Tipo</th>
+            <th>Ciclo</th>
           </tr>
         </thead>
         <tbody>
           {transactions.map(transaction => (
-            <tr key={transaction.id}>
-              <td>{transaction.name}</td>
-              <td>{transaction.date}</td>
-              <td>{transaction.amount}</td>
-              <td>{transaction.type}</td>
-              <td>{transaction.category}</td>
+            <tr key={transaction.transId}>
+              <td>{transaction.transId}</td>
+              <td>{transaction.transName}</td>
+              <td>{transaction.transDate}</td>
+              <td>{transaction.transAmount}</td>
+              <td>{transaction.transCategory}</td>
+              <td>{transaction.transType}</td>
+              <td>{transaction.transCicle}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
-};
-
-export default TransactionTable;
+}
