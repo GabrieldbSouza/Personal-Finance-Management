@@ -1,96 +1,280 @@
 from flask import Blueprint, request, jsonify
-from flask_bcrypt import Bcrypt
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from database.models.user import User
-from database.models.transaction import Transaction, Type, Category
-from database.database import db
-from datetime import timedelta
 from datetime import datetime
-import json
+from database.models.transaction import Transaction, Type, Category, Cicle
+from database.database import db
+
 userPageRoute = Blueprint('user', __name__)
-bcrypt = Bcrypt()
 
-@userPageRoute.route('/transaction', methods = ['GET','OPTIONS'])
-@jwt_required()
-def transaction():
-  if request.method == 'OPTIONS':
-    response = jsonify(message='OPTIONS request received')
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-    response.headers.add('Access-Control-Allow-Methods', '*')
-
-    return response, 200
+def handleOptions():
+  response = jsonify(message='OPTIONS request received')
+  response.headers.add('Access-Control-Allow-Origin', '*')
+  response.headers.add('Access-Control-Allow-Headers', '*')
+  response.headers.add('Access-Control-Allow-Methods', '*')
   
-  tkUserId = get_jwt_identity()
-  user = User.query.filter_by(userId=tkUserId).first()
-
-  if not user:
-    return jsonify(message='User not found'), 404
-
-  transactions = Transaction.query.filter_by(transUserId=user.userId).all()
-
-  # Convertendo as transações para um formato adequado
-  transactions_data = [transaction.to_dict() for transaction in transactions]
-  print(json.dumps(transactions_data, indent=2))
-
-  return jsonify(transactions_data)
+  return response, 200
 
 @userPageRoute.route('/transaction/new', methods = ['POST'])
 @jwt_required()
-def newTransaction():
-
-  tkUserId = get_jwt_identity()
-
-  name = request.json.get('name')
-  userId = tkUserId
-  date = datetime.strptime(request.json.get('date'), '%Y-%m-%d').date()
-  amount = request.json.get('amount')
-  type = request.json.get('type')
-  category = request.json.get('category')
-
-  transaction = Transaction(
-     transName = name, 
-     transUserId = userId, 
-     transDate = date, 
-     transAmount = amount, 
-     transType = type, 
-     transCategory = category)
+def transactionNew(): # Cria uma nova transação
   
-  db.session.add(transaction)
-  db.session.commit()
-
-  return '',200
-
-@userPageRoute.route('/type/new', methods = ['POST', 'GET','OPTIONS'])
-def newType():
   if request.method == 'OPTIONS':
-    response = jsonify(message='OPTIONS request received')
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'POST')
-    return response, 200
+    return handleOptions()
   
-  if request.methods == 'GET':
-     return jsonify({"nome": "Funcionou"})
-  
-  name = request.json.get('type')
-  type = Type(typeName=name)  # Corrigido para typeType
-  db.session.add(type)
+  userId = get_jwt_identity()
+  transName = request.json.get('transName')
+  transdate = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
+  transAmount = request.json.get('transAmount')
+  transCategory = request.json.get('transCategory')
+  transType = request.json.get('transType')
+  transCicle = request.json.get('transCicle')
+
+  transactionNew = Transaction(
+    transUserId = userId,
+    transName = transName,
+    transDate = transdate,
+    transAmount = transAmount,
+    transCategory = transCategory,
+    transType = transType,
+    transCicle = transCicle
+  )
+
+  db.session.add(transactionNew)
   db.session.commit()
-  return '', 200
 
-@userPageRoute.route('/category/new', methods=['POST', 'OPTIONS'])
-def newCategory():
-    if request.method == 'OPTIONS':
-        response = jsonify(message='OPTIONS request received')
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'POST')
-        return response, 200
+  return jsonify({"mensagem": "Transação criada com sucesso."}), 200
+  
+@userPageRoute.route('/transaction/update', methods = ['PUT'])
+@jwt_required()
+def transactionUpdate(): # Atualiza uma nova transação 
 
-    name = request.json.get('catName')  # Corrigido para pegar 'catName' do JSON
-    category = Category(catName=name)
-    db.session.add(category)
-    db.session.commit()
+  if request.method == 'OPTIONS':
+    return handleOptions()
+  
+  userId = get_jwt_identity()
+  transId = request.json.get('transId')
 
-    return jsonify({"message": "Categoria criada com sucesso"}), 200  # Retornando uma resposta JSON válida
+  transactionUpdate = Transaction.query.filter_by(transId = transId, transUserId = userId).first()
+
+  transactionUpdate.transName = request.json.get('transName')
+  transactionUpdate.transdate = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
+  transactionUpdate.transAmount = request.json.get('transAmount')
+  transactionUpdate.transCategory = request.json.get('transCategory')
+  transactionUpdate.transType = request.json.get('transType')
+  transactionUpdate.transCicle = request.json.get('transCicle')
+
+  db.session.commit()
+
+  return jsonify({"menssagem": "Transação atualizada com sucesso."}), 200
+  
+@userPageRoute.route('/transaction/delete', methods = ['DELETE'])
+@jwt_required()
+def transactionDelete(): # Apaga uma transação
+
+  if request.method == 'OPTIONS':
+    return handleOptions()
+  
+  userId = get_jwt_identity()
+  transId = request.json.get('transId')
+
+  transactionDelete = Transaction.query.filter_by(transId = transId, transUserId = userId).first()
+
+  db.session.delete(transactionDelete)
+  db.session.commit()
+
+  return jsonify({"mensagem": "Transação apagada com sucesso."})
+  
+@userPageRoute.route('/transaction/', methods = ['GET'])
+@jwt_required()
+def transaction(): # Retorna uma transação
+
+  if request.method == 'OPTIONS':
+    return handleOptions()
+   
+  userId = get_jwt_identity()
+  transId = request.json.get('transId')
+
+  transaction = Transaction.query.filter_by(transId = transId, transUserId = userId).first()
+
+  transactionData = {
+    'userId': transaction.transUserId,
+    'transId': transaction.transId,
+    'transName': transaction.transName,
+    'transDate': transaction.transDate.strftime('%Y-%m-%d %H:%M:%S'),  # Converte para string no formato desejado
+    'transAmount': transaction.transAmount,
+    'transCategory': transaction.transCategory,
+    'transType': transaction.transType,
+    'transCicle': transaction.transCicle
+  }
+
+  return jsonify(transactionData)
+
+@userPageRoute.route('/transactions', methods = ['GET', 'OPTIONS'])
+@jwt_required()
+def transactions(): # Retorna todas as transações
+
+  if request.method == 'OPTIONS':
+    return handleOptions()
+    
+  userId = get_jwt_identity()
+  
+  transactions = Transaction.query.filter_by(transUserId = userId).all()
+
+  transactionData = []
+
+  for transaction in transactions:
+
+    transactionData.append ({
+      'userId': transaction.transUserId,
+      'transId': transaction.transId,
+      'transName': transaction.transName,
+      'transDate': transaction.transDate.strftime('%Y-%m-%d %H:%M:%S'),  
+      'transAmount': transaction.transAmount,
+      'transCategory': transaction.transCategory,
+      'transType': transaction.transType,
+      'transCicle': transaction.transCicle
+    })
+
+  return jsonify(transactionData)
+
+@userPageRoute.route('/transaction/from/date', methods = ['GET'])
+@jwt_required()
+def transactionFromDate(): # Retorna todas as transações a partir de uma data
+
+  if request.method == 'OPTIONS':
+    return handleOptions()
+    
+  userId = get_jwt_identity()
+  date = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
+
+  transactions = Transaction.query.filter((Transaction.transUserId == userId) & (Transaction.transDate <= date)).all()
+
+  for transaction in transactions:
+    transactionData = []
+    
+    transactionData.append ({
+      'userId': transaction.transUserId,
+      'transId': transaction.transId,
+      'transName': transaction.transName,
+      'transDate': transaction.transDate.strftime('%Y-%m-%d %H:%M:%S'),  # Converte para string no formato desejado
+      'transAmount': transaction.transAmount,
+      'transCategory': transaction.transCategory,
+      'transType': transaction.transType,
+      'transCicle': transaction.transCicle
+    })
+
+  return jsonify(transactionData)
+
+@userPageRoute.route('/transaction/to/date', methods = ['GET'])
+@jwt_required()
+def transactionToDate(): # Retorna todas as transações até uma data
+
+  if request.method == 'OPTIONS':
+    return handleOptions()
+    
+  userId = get_jwt_identity()
+  date = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
+
+  transactions = Transaction.query.filter((Transaction.transUserId == userId) & (Transaction.transDate >= date)).all()
+
+  for transaction in transactions:
+    transactionData = []
+    
+    transactionData.append ({
+      'userId': transaction.transUserId,
+      'transId': transaction.transId,
+      'transName': transaction.transName,
+      'transDate': transaction.transDate.strftime('%Y-%m-%d %H:%M:%S'),  # Converte para string no formato desejado
+      'transAmount': transaction.transAmount,
+      'transCategory': transaction.transCategory,
+      'transType': transaction.transType,
+      'transCicle': transaction.transCicle
+    })
+
+  return jsonify(transactionData)
+  
+@userPageRoute.route('/transaction/between/datefrom/dateto', methods = ['GET'])
+@jwt_required()
+def transactionBetweenDate(): # Retorna todas as transações entre duas datas
+
+  if request.method == 'OPTIONS':
+    return handleOptions()
+    
+  userId = get_jwt_identity()
+  dateFrom = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
+  dateTo = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
+
+  transactions = Transaction.query.filter((Transaction.transUserId == userId) & (Transaction.transDate <= dateFrom) & (Transaction.transDate >= dateTo)).all()
+
+  for transaction in transactions:
+    transactionData = []
+    
+    transactionData.append ({
+      'userId': transaction.transUserId,
+      'transId': transaction.transId,
+      'transName': transaction.transName,
+      'transDate': transaction.transDate.strftime('%Y-%m-%d %H:%M:%S'),  # Converte para string no formato desejado
+      'transAmount': transaction.transAmount,
+      'transCategory': transaction.transCategory,
+      'transType': transaction.transType,
+      'transCicle': transaction.transCicle
+    })
+
+  return jsonify(transactionData)
+
+@userPageRoute.route('/transaction/type/new', methods = ['POST'])
+@jwt_required()
+def transactionType():
+  
+  if request.method == 'OPTIONS':
+    return handleOptions()
+    
+  userId = get_jwt_identity()
+  typeName = request.json.get('typeName')
+
+  typeNew = Type(
+    typeName = typeName
+  )
+
+  db.session.add(typeNew)
+  db.session.commit()
+
+  return jsonify({"mensagem": "Tipo de transação criada com sucesso."}), 200
+
+@userPageRoute.route('/transaction/category/new', methods = ['POST'])
+@jwt_required()
+def transactionCategory():
+  
+  if request.method == 'OPTIONS':
+    return handleOptions()
+    
+  userId = get_jwt_identity()
+  categoryName = request.json.get('categoryName')
+
+  categoryNew = Category(
+    categoryName = categoryName
+  )
+
+  db.session.add(categoryNew)
+  db.session.commit()
+
+  return jsonify({"mensagem": "Categoria de transação criada com sucesso."}), 200
+
+@userPageRoute.route('/transaction/cicle/new', methods = ['POST', 'OPTIONS'])
+@jwt_required()
+def transactionCicle():
+  
+  if request.method == 'OPTIONS':
+    return handleOptions()
+  
+  userId = get_jwt_identity()
+  cicleName = request.json.get('cicleName') 
+  
+  cicleNew = Cicle(
+    cicleName = cicleName
+  )
+
+  db.session.add(cicleNew)
+  db.session.commit()
+
+  return jsonify({"mensagem": "Ciclo de transação criada com sucesso."}), 200
