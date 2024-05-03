@@ -2,7 +2,6 @@
   display: flex;
   height: 84vh;
   width: 100vw;
-  
 }
 
 .introduction {
@@ -46,4 +45,58 @@
 .figure img {
   height: 100%;
   width: auto;
+}
+
+@media screen and (max-width: 768px) {
+
+  .page{
+    display: flex;
+    flex-direction: column-reverse;
+    height: 94vh;
+    width: 100vw;
+  }
+  
+  .introduction {
+    justify-content: space-between;
+    height: 50%;
+    width: 100%;
+    padding: 5px 10px;
+  }
+  .introduction h1{
+    font-size: 30px;
+    margin-bottom: 20px;
+    font-weight: 900;
+  }
+  
+  .introduction h6{
+    font-size: 12px;
+    margin-bottom: 40px;
+    font-weight: 400;
+  }
+  
+  .button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .introduction button{
+    color: green;
+    background-color: greenyellow;
+    border: green;
+    padding: 15px 50px;
+    border-radius: 20px;
+    font-size: 32px;
+    cursor: pointer;
+    font-weight: 900;
+  }
+  
+  .figure {
+    height: 50%;
+    width: 100%;
+  }
+  
+  .figure img {
+    height: 100%;
+    width: auto;
+  }  
 }

@@ -29,9 +29,9 @@ export default function Register() {
     <div className={styles.form}>
       <h2>REGISTER</h2>
       <form onSubmit={hadleSubmit}>
-      <input className={styles.input} type="name" value={userName} onChange={e => setUserName(e.target.value)} />
-        <input className={styles.input} type="email" value={userEmail} onChange={e => setUserEmail(e.target.value)} />
-        <input className={styles.input} type="password" value={userPassword} onChange={e => setUserPassword(e.target.value)} />
+      <input className={styles.input} type="name" value={userName} onChange={e => setUserName(e.target.value)} placeholder="Name" />
+        <input className={styles.input} type="email" value={userEmail} onChange={e => setUserEmail(e.target.value)} placeholder="Email" />
+        <input className={styles.input} type="password" value={userPassword} onChange={e => setUserPassword(e.target.value)} placeholder="Password" />
         <button className={styles.button} onClick={hadleSubmit}>REGISTER</button>
       </form>
     </div>

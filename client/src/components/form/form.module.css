@@ -29,9 +29,19 @@ form input {
   padding: 5px 10px;
 }
 
+.form .select {
+  margin-bottom: 10px;
+  height: 30px;
+  width: 260px;
+  padding: 5px 10px;
+}
 .button {
   cursor: pointer;
   color: green;
   background-color: greenyellow;
   border: green;
+}
+
+* ::placeholder {
+  color: black;
 }

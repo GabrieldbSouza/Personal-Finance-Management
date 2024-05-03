@@ -3,16 +3,19 @@ from database.database import db
 class Category(db.Model):
     __tablename__ = 'category'
     categoryId = db.Column(db.Integer, primary_key = True)
+    categoryUserId = db.Column(db.Integer, db.ForeignKey('user.userId'), nullable = False)
     categoryName = db.Column(db.String, nullable = False)
 
 class Type(db.Model):
     __tablename__ = 'type'
     typeId = db.Column(db.Integer, primary_key = True)
+    typeUserId = db.Column(db.Integer, db.ForeignKey('user.userId'), nullable = False)
     typeName = db.Column(db.String, nullable = False)
 
 class Cicle(db.Model):
     __tablename__ = 'cicle'
     cicleId = db.Column(db.Integer, primary_key = True)
+    cicleUserId = db.Column(db.Integer, db.ForeignKey('user.userId'), nullable = False)
     cicleName = db.Column(db.String, nullable = False)
 
 class Transaction(db.Model):

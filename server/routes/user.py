@@ -233,6 +233,7 @@ def transactionType():
   typeName = request.json.get('typeName')
 
   typeNew = Type(
+    typeUserId = userId,
     typeName = typeName
   )
 
@@ -252,6 +253,7 @@ def transactionCategory():
   categoryName = request.json.get('categoryName')
 
   categoryNew = Category(
+    categoryUserId = userId,
     categoryName = categoryName
   )
 
@@ -271,6 +273,7 @@ def transactionCicle():
   cicleName = request.json.get('cicleName') 
   
   cicleNew = Cicle(
+    cicleUserId = userId,
     cicleName = cicleName
   )
 
@@ -278,3 +281,66 @@ def transactionCicle():
   db.session.commit()
 
   return jsonify({"mensagem": "Ciclo de transação criada com sucesso."}), 200
+
+@userPageRoute.route('/transaction/categories', methods=['GET', 'OPTIONS'])
+@jwt_required()
+def categories():
+  
+  if request.method == 'OPTIONS':
+    return handleOptions()
+
+  userId = get_jwt_identity()
+
+  categories = Category.query.filter_by(categoryUserId = userId).all()
+
+  categoryData = []
+
+  for category in categories:
+    categoryData.append({
+      'categoryId': category.categoryId,
+      'categoryName': category.categoryName  # Adicione os atributos desejados aqui
+    })
+
+  return jsonify(categoryData)
+
+@userPageRoute.route('/transaction/types', methods=['GET', 'OPTIONS'])
+@jwt_required()
+def types():
+  
+  if request.method == 'OPTIONS':
+    return handleOptions()
+
+  userId = get_jwt_identity()
+
+  types = Type.query.filter_by(typeUserId = userId).all()
+
+  typeData = []
+
+  for type in types:
+    typeData.append({
+      'typeId': type.typeId,
+      'typeName': type.typeName  # Adicione os atributos desejados aqui
+    })
+
+  return jsonify(typeData)
+
+@userPageRoute.route('/transaction/cicles', methods=['GET', 'OPTIONS'])
+@jwt_required()
+def cicles():
+  
+  if request.method == 'OPTIONS':
+    return handleOptions()
+
+  userId = get_jwt_identity()
+
+  cicles = Cicle.query.filter_by(cicleUserId = userId).all()
+
+  cicleData = []
+
+  for cicle in cicles:
+    cicleData.append({
+      'cicleId': cicle.cicleId,
+      'cicleName': cicle.cicleName  # Adicione os atributos desejados aqui
+    })
+
+  return jsonify(cicleData)

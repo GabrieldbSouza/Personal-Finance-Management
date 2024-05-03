@@ -1,0 +1,18 @@
+.chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.select {
+  margin: 10px;
+  width: 400px;
+  display: flex;
+  justify-content: space-between;
+}

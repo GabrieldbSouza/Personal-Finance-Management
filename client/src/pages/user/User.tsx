@@ -5,6 +5,7 @@ import CicleForm from "../../components/form/CicleForm";
 import TypeForm from "../../components/form/TypeForm";
 import TransactionForm from "../../components/form/TransactionForm";
 import TransactionTable from '../../components/TransactionTable';
+import TransactionChart from '../../components/TransactionChart';
 
 export default function User() {
   const [currentForm, setCurrentForm] = useState<string | null>(null);
@@ -21,6 +22,7 @@ export default function User() {
         <button className={styles.button} onClick={() => handleButtonClick('type')}>Add Type</button>
         <button className={styles.button} onClick={() => handleButtonClick('transaction')}>Add Transaction</button>
         <button className={styles.button} onClick={() => handleButtonClick('showTransaction')}>Show Transaction</button>
+        <button className={styles.button} onClick={() => handleButtonClick('showTransactionChart')}>Show Transaction Chart</button>
       </div>
       <div className="form">
           {currentForm === 'category' && <CategoryForm />}
@@ -28,6 +30,7 @@ export default function User() {
           {currentForm === 'type' && <TypeForm />}
           {currentForm === 'transaction' && <TransactionForm />}
           {currentForm === 'showTransaction' && <TransactionTable />}
+          {currentForm === 'showTransactionChart' && <TransactionChart />}
         </div>
     </div>
   );

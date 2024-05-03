@@ -7,7 +7,7 @@ export default function CategoryForm() {
 
   const hadleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-
+    console.log(categoryName)
     const response = await api.post('/user/transaction/category/new', {
       categoryName
     })
