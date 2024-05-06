@@ -84,7 +84,7 @@ def transactionDelete(): # Apaga uma transação
 
   return jsonify({"mensagem": "Transação apagada com sucesso."})
   
-@userPageRoute.route('/transaction/', methods = ['GET'])
+@userPageRoute.route('/transaction', methods = ['GET'])
 @jwt_required()
 def transaction(): # Retorna uma transação
 
