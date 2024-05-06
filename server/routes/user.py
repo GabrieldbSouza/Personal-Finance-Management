@@ -23,7 +23,7 @@ def transactionNew(): # Cria uma nova transação
   
   userId = get_jwt_identity()
   transName = request.json.get('transName')
-  transdate = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
+  transDate = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
   transAmount = request.json.get('transAmount')
   transCategory = request.json.get('transCategory')
   transType = request.json.get('transType')
@@ -32,7 +32,7 @@ def transactionNew(): # Cria uma nova transação
   transactionNew = Transaction(
     transUserId = userId,
     transName = transName,
-    transDate = transdate,
+    transDate = transDate,
     transAmount = transAmount,
     transCategory = transCategory,
     transType = transType,
@@ -57,7 +57,7 @@ def transactionUpdate(): # Atualiza uma nova transação
   transactionUpdate = Transaction.query.filter_by(transId = transId, transUserId = userId).first()
 
   transactionUpdate.transName = request.json.get('transName')
-  transactionUpdate.transdate = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
+  transactionUpdate.transDate = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
   transactionUpdate.transAmount = request.json.get('transAmount')
   transactionUpdate.transCategory = request.json.get('transCategory')
   transactionUpdate.transType = request.json.get('transType')
@@ -84,7 +84,7 @@ def transactionDelete(): # Apaga uma transação
 
   return jsonify({"mensagem": "Transação apagada com sucesso."})
   
-@userPageRoute.route('/transaction/', methods = ['GET'])
+@userPageRoute.route('/transaction', methods = ['GET'])
 @jwt_required()
 def transaction(): # Retorna uma transação
 
@@ -97,7 +97,7 @@ def transaction(): # Retorna uma transação
   transaction = Transaction.query.filter_by(transId = transId, transUserId = userId).first()
 
   transactionData = {
-    'userId': transaction.transUserId,
+    'transUserId': transaction.transUserId,
     'transId': transaction.transId,
     'transName': transaction.transName,
     'transDate': transaction.transDate.strftime('%Y-%m-%d %H:%M:%S'),  # Converte para string no formato desejado
@@ -125,7 +125,7 @@ def transactions(): # Retorna todas as transações
   for transaction in transactions:
 
     transactionData.append ({
-      'userId': transaction.transUserId,
+      'transUserId': transaction.transUserId,
       'transId': transaction.transId,
       'transName': transaction.transName,
       'transDate': transaction.transDate.strftime('%Y-%m-%d %H:%M:%S'),  
@@ -147,13 +147,13 @@ def transactionFromDate(): # Retorna todas as transações a partir de uma data
   userId = get_jwt_identity()
   date = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
 
-  transactions = Transaction.query.filter((Transaction.transUserId == userId) & (Transaction.transDate <= date)).all()
+  transactions = Transaction.query.filter((Transaction.transUserId == userId) & (Transaction.transDate >= date)).all()
 
-  for transaction in transactions:
-    transactionData = []
-    
+  transactionData = []
+
+  for transaction in transactions:    
     transactionData.append ({
-      'userId': transaction.transUserId,
+      'transUserId': transaction.transUserId,
       'transId': transaction.transId,
       'transName': transaction.transName,
       'transDate': transaction.transDate.strftime('%Y-%m-%d %H:%M:%S'),  # Converte para string no formato desejado
@@ -175,13 +175,13 @@ def transactionToDate(): # Retorna todas as transações até uma data
   userId = get_jwt_identity()
   date = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
 
-  transactions = Transaction.query.filter((Transaction.transUserId == userId) & (Transaction.transDate >= date)).all()
+  transactions = Transaction.query.filter((Transaction.transUserId == userId) & (Transaction.transDate <= date)).all()
 
-  for transaction in transactions:
-    transactionData = []
-    
+  transactionData = []
+
+  for transaction in transactions:    
     transactionData.append ({
-      'userId': transaction.transUserId,
+      'transUserId': transaction.transUserId,
       'transId': transaction.transId,
       'transName': transaction.transName,
       'transDate': transaction.transDate.strftime('%Y-%m-%d %H:%M:%S'),  # Converte para string no formato desejado
@@ -201,16 +201,17 @@ def transactionBetweenDate(): # Retorna todas as transações entre duas datas
     return handleOptions()
     
   userId = get_jwt_identity()
-  dateFrom = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
-  dateTo = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
+  dateFrom = datetime.strptime(request.json.get('dateFrom'), '%Y-%m-%d').date()
+  dateTo = datetime.strptime(request.json.get('dateTo'), '%Y-%m-%d').date()
 
-  transactions = Transaction.query.filter((Transaction.transUserId == userId) & (Transaction.transDate <= dateFrom) & (Transaction.transDate >= dateTo)).all()
+  transactions = Transaction.query.filter((Transaction.transUserId == userId) & (Transaction.transDate >= dateFrom) & (Transaction.transDate <= dateTo)).all()
+
+  transactionData = []
 
   for transaction in transactions:
-    transactionData = []
     
     transactionData.append ({
-      'userId': transaction.transUserId,
+      'transUserId': transaction.transUserId,
       'transId': transaction.transId,
       'transName': transaction.transName,
       'transDate': transaction.transDate.strftime('%Y-%m-%d %H:%M:%S'),  # Converte para string no formato desejado
@@ -298,7 +299,7 @@ def categories():
   for category in categories:
     categoryData.append({
       'categoryId': category.categoryId,
-      'categoryName': category.categoryName  # Adicione os atributos desejados aqui
+      'categoryName': category.categoryName
     })
 
   return jsonify(categoryData)
