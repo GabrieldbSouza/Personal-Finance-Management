@@ -29,10 +29,10 @@ def login():
   user = User.query.filter_by(userEmail = userEmail).first()
 
   if user is None:
-    return jsonify({'erro': 'Email invalido'}), 404
+    return jsonify({'emailErro': 'Email invalido'}), 404
   
   if not bcrypt.check_password_hash(user.userPassword, userPassword):
-    return jsonify({'erro': 'Senha invalida'}), 401
+    return jsonify({'passwordErro': 'Senha invalida'}), 401
   
   accessToken = create_access_token(identity = user.userId, expires_delta = timedelta(hours = 1))
   
@@ -51,7 +51,7 @@ def register():
   user = User.query.filter_by(userEmail = userEmail).first()
 
   if user is not None:
-    return jsonify({'erro': 'Usuario já cadastrado.'}), 409
+    return jsonify({'emailErro': 'Usuario já cadastrado.'}), 409
 
   newUser = User(userName = userName, userEmail = userEmail, userPassword = bcrypt.generate_password_hash(userPassword))
 

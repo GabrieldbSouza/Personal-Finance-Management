@@ -7,6 +7,7 @@ from database.database import db
 userPageRoute = Blueprint('user', __name__)
 
 def handleOptions():
+  print('batat')
   response = jsonify(message='OPTIONS request received')
   response.headers.add('Access-Control-Allow-Origin', '*')
   response.headers.add('Access-Control-Allow-Headers', '*')
@@ -175,7 +176,8 @@ def transactionToDate(): # Retorna todas as transações até uma data
   userId = get_jwt_identity()
   date = datetime.strptime(request.json.get('transDate'), '%Y-%m-%d').date()
 
-  transactions = Transaction.query.filter((Transaction.transUserId == userId) & (Transaction.transDate <= date)).all()
+  transactions = Transaction.query.filter((Transaction.transUserId == userId) & 
+                                          (Transaction.transDate <= date)).all()
 
   transactionData = []
 
@@ -248,8 +250,10 @@ def transactionType():
 def transactionCategory():
   
   if request.method == 'OPTIONS':
+    print('batat')
     return handleOptions()
-    
+  
+  print('batat')
   userId = get_jwt_identity()
   categoryName = request.json.get('categoryName')
 
