@@ -35,3 +35,9 @@ form input {
   background-color: greenyellow;
   border: green;
 }
+
+.error {
+  color: red;
+  font-size: 12px;
+  margin-bottom: 10px;
+}

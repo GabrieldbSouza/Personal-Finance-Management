@@ -1,113 +1,58 @@
-import styles from "./login.module.css"
-import { FormEvent, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useState } from 'react'; 
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import styles from "./login.module.css";
 
-export default function Login(){
+const schema = z.object({
+  email: z.string().email({ message: "Insira um email válido" }).min(1, { message: "O email é obrigatório" }),
+  password: z.string().min(8, { message: "A senha deve ter no mínimo 8 caracteres" }).min(1, { message: "A senha é obrigatória" }),
+});
 
-  const [userEmail, setUserEmail] = useState('');
-  const [userPassword, setUserPassword] = useState('');
+type FormData = z.infer<typeof schema>;
+
+export default function Login() {
   const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
 
-  const hadleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-        
-    const response = await api.post('/login', {
-      userEmail,
-      userPassword
-    });
-    localStorage.setItem('accessToken', response.data);
-    navigate('/user');
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      const response = await api.post('/login', {
+        userEmail: data.email,
+        userPassword: data.password
+      });
+      const { accessToken } = response.data;
+      localStorage.setItem('accessToken', accessToken);
+      navigate('/user');
+    } catch (error: any) {
+      if (error.response && error.response.status === 404) {
+        setErrorMessage("Email inválido. Por favor, verifique o email digitado.");
+      } else if (error.response && error.response.status === 401) {
+        setErrorMessage("Senha inválida. Por favor, verifique a senha digitada.");
+      } else {
+        console.error('Erro ao fazer login:', error);
+        setErrorMessage("Erro ao fazer login. Por favor, tente novamente mais tarde.");
+      }
+    }
   }
 
   return (
     <div className={styles.form}>
       <h2>LOGIN</h2>
-      <form onSubmit={hadleSubmit}>
-        <input className={styles.input} type="email" value={userEmail} onChange={e => setUserEmail(e.target.value)} placeholder="Email" />
-        <input className={styles.input} type="password" value={userPassword} onChange={e => setUserPassword(e.target.value)} placeholder="Password" />
-        <button className={styles.button} onClick={hadleSubmit}>LOGIN</button>
+      {errorMessage && <span className={styles.error}>{errorMessage}</span>}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <input className={styles.input} type="email" {...register("email")} placeholder="Email" />
+        {errors.email && <span className={styles.error}>{errors.email.message}</span>}
+        <input className={styles.input} type="password" {...register("password")} placeholder="Password" />
+        {errors.password && <span className={styles.error}>{errors.password.message}</span>}
+        <button className={styles.button} type="submit">LOGIN</button>
       </form>
     </div>
   )
 }
-
-/*
-import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from 'react-router-dom'
-import styles from './login.module.css'
-
-function Login() {
-  const navigate = useNavigate();
-
-  const goToRegister = () => {
-    navigate('/register');
-  }
-
-  const [loginForm, setLoginForm] = useState({
-    email: "",
-    password: ""
-  });
-
-  function handleEmailChange(e: any) {
-    const { value } = e.target;
-    setLoginForm(prevState => ({
-      ...prevState,
-      email: value
-    }));
-  }
-
-  function handlePasswordChange(e: any) {
-    const { value } = e.target;
-    setLoginForm(prevState => ({
-      ...prevState,
-      password: value
-    }));
-  }
-
-  function login(e: any) {
-    e.preventDefault();
-    axios({
-      method: "POST",
-      url: "http://127.0.0.1:5000/login",
-      data: {
-        email: loginForm.email,
-        password: loginForm.password
-      },
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }).then((resp) => {
-      const {accessToken } = resp.data;
-
-      if (accessToken && typeof accessToken === 'string' && accessToken.trim() !== '') {
-        localStorage.setItem('token', accessToken);
-        navigate('/user');
-    } else{
-        navigate('/login');
-    }
-    }).catch(error => {
-      alert("Erro no login: " + error.response.data.message);
-    });
-    setLoginForm({
-      email: "",
-      password: ""
-    });
-  }
-  return (
-    <div className={styles.form}>
-      <h2>Login</h2>
-      <form onSubmit={login}>
-        <input type="email" value={loginForm.email} onChange={handleEmailChange} placeholder='Email'/>
-        <input type="password" value={loginForm.password} onChange={handlePasswordChange} placeholder='Password'/>
-        <input className={styles.button} type="submit" value="Entrar" />
-      </form>
-      <button onClick={goToRegister}>Ainda não tem uma conta? Crie uma agora!</button>
-    </div>
-  )
-}
-
-export default Login;
-
-*/
