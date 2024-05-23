@@ -19,7 +19,7 @@ export default function TransactionTable() {
   useEffect(() => {
     async function Transaction() {
       const response = await api.get('user/transactions');
-        setTransactions(response.data);
+      setTransactions(response.data);
     }
     Transaction();
   }, [])

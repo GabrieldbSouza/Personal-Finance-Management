@@ -6,6 +6,7 @@ import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import User from "./pages/user/User";
 import { PrivateRoute } from "./components/isAuthenticated";
+import Dashboard from "./components/Dashboard";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/register" element={<Register />}></Route>    
         <Route path="/user" element={<PrivateRoute> <User /> </PrivateRoute>}></Route>  
+        <Route path="/dash" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   )

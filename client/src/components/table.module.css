@@ -4,33 +4,32 @@
   align-items: center;
 }
 
-h2 {
+.table h2 {
   margin-bottom: 50px;
 }
 
-table {
+.table table {
   text-align: center;
   border: 1px solid #ddd;
-
 }
 
-th, td {
+.table th, .table td {
   padding: 5px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
 @media screen and (max-width: 480px) {
-  table {
+  .table table {
     width: 100%;
     table-layout: fixed;
   }
 }
 
-tr:nth-child(even) {
+.table tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
-tr:nth-child(odd) {
+.table tr:nth-child(odd) {
   background-color: #ffffff;
 }
